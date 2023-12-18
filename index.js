@@ -1,26 +1,22 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const express = require('express');
 
-http
-  .createServer((req, res) => {
-    const view = req.url === '/' ? 'index' : req.url;
-    const filepath = path.join(__dirname, 'views', `${view}.html`);
-    const errorpath = path.join(__dirname, 'views', '404.html');
+const app = express();
+const viewsDir = __dirname + '/views';
 
-    fs.readFile(filepath, (err, content) => {
-      if (err) {
-        fs.readFile(errorpath, (err, errorpage) => {
-          if (err) throw err;
-          res.writeHead(404, { 'Content-Type': 'text/html' });
-          res.write(errorpage);
-          res.end();
-        });
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write(content);
-        res.end();
-      }
-    });
-  })
-  .listen(8080);
+app.get('/', (req, res) => {
+  res.sendFile(viewsDir + '/index.html');
+});
+
+app.get('/about', (req, res) => {
+  res.sendFile(viewsDir + '/about.html');
+});
+
+app.get('/contact-me', (req, res) => {
+  res.sendFile(viewsDir + '/contact-me.html');
+});
+
+app.use((req, res) => {
+  res.sendFile(viewsDir + '/404.html');
+});
+
+app.listen(8080);
